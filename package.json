@@ -4,8 +4,8 @@
   "description": "Template for the WebSocket remote control task",
   "main": "index.js",
   "scripts": {
-    "start": "tsx ./src/index.ts",
-    "start:dev": "tsx watch ./src/index.ts",
+    "start": "nodemon ./src/index.ts",
+    "start:dev": "nodemon ./src/index.ts",
     "start:prod": "tsc && node ./dist/index.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -16,6 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.11.19",
+    "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
     "eslint": "^8.56.0",
@@ -29,6 +30,6 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.4",
-    "ws": "^8.8.0"
+    "ws": "^8.16.0"
   }
 }
