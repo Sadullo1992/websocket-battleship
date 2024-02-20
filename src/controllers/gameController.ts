@@ -4,12 +4,15 @@ import { GameCommands, Player } from '../types';
 import { sendToWebSocketClient } from '../utils/sendToWebSocketClient';
 
 export const login = (ws: WebSocket, data: unknown) => {
-  const newPlayer = gameOperations.createPlayer(data as Omit<Player, 'index'>);
+  const { name, index } = gameOperations.createPlayer(
+    data as Omit<Player, 'index'>,
+  );
 
   const newPlayerStringData = JSON.stringify({
+    name,
+    index,
     error: false,
     errorText: 'No error',
-    ...newPlayer,
   });
 
   sendToWebSocketClient(ws, GameCommands.REG, newPlayerStringData);
