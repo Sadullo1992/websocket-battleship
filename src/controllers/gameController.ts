@@ -8,12 +8,25 @@ export const login = (ws: WebSocket, data: unknown) => {
     data as Omit<Player, 'index'>,
   );
 
-  const newPlayerStringData = JSON.stringify({
+  const stringifyNewPlayer = JSON.stringify({
     name,
     index,
     error: false,
     errorText: 'No error',
   });
 
-  sendToWebSocketClient(ws, GameCommands.REG, newPlayerStringData);
+  sendToWebSocketClient(ws, GameCommands.REG, stringifyNewPlayer);
+};
+
+const updateRooms = (ws: WebSocket) => {
+  const rooms = gameOperations.getRooms();
+  const stringifyRooms = JSON.stringify(rooms);
+
+  sendToWebSocketClient(ws, GameCommands.UPDATE_ROOM, stringifyRooms);
+};
+
+export const createRoom = (ws: WebSocket) => {
+  gameOperations.createRoom();
+
+  updateRooms(ws);
 };

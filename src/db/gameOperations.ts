@@ -1,11 +1,10 @@
 import { Player } from '../types';
+import { uuidGenerator } from '../utils/uuidGenerator';
 import * as DB from './db';
 
 export const createPlayer = (player: Omit<Player, 'index'>) => {
-  const index = DB.players.length;
-
   const newPlayer = {
-    index,
+    index: uuidGenerator(),
     ...player,
   };
 
@@ -13,3 +12,14 @@ export const createPlayer = (player: Omit<Player, 'index'>) => {
 
   return newPlayer;
 };
+
+export const createRoom = () => {
+  const newRoom = {
+    roomId: uuidGenerator(),
+    roomUsers: [],
+  };
+
+  DB.rooms.push(newRoom);
+};
+
+export const getRooms = () => DB.rooms;

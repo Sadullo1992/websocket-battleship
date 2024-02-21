@@ -10,6 +10,9 @@ const wsController = (ws: WebSocket, rawData: WebSocket.RawData) => {
     case GameCommands.REG:
       gameController.login(ws, data);
       break;
+    case GameCommands.CREATE_ROOM:
+      gameController.createRoom(ws);
+      break;
   }
 };
 
