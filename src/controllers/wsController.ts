@@ -13,6 +13,9 @@ const wsController = (ws: WebSocket, rawData: WebSocket.RawData) => {
     case GameCommands.CREATE_ROOM:
       gameController.createRoom(ws);
       break;
+    case GameCommands.ADD_USER_TO_ROOM:
+      gameController.addUserToRoom(ws, data);
+      break;
   }
 };
 
