@@ -59,3 +59,8 @@ export const createGame = (indexUser: string) => {
 
   return newGame;
 };
+
+export const removeRoom = (indexRoom: string) => {
+  const index = DB.rooms.findIndex((item) => item.roomId === indexRoom);
+  DB.rooms.splice(index, 1);
+};

@@ -58,6 +58,7 @@ export const addUserToRoom = (ws: WebSocket, data: unknown) => {
   if (roomUsers?.length === 2) {
     const game = gameOperations.createGame(indexUser);
     createGame(game);
+    gameOperations.removeRoom(indexRoom);
   }
 
   updateRooms();
