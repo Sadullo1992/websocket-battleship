@@ -1,14 +1,19 @@
 import WebSocket from 'ws';
 import * as gameOperations from '../db/gameOperations';
-import { AddUserReq, GameCommands, Player } from '../types';
-import { sendToWebSocketClient } from '../utils/sendToWebSocketClient';
-import { wsServer } from '../wsServer';
+import * as wsOperations from '../db/wsOperations';
+import { AddUserReq, Game, GameCommands, Player } from '../types';
+import {
+  sendToWebSocketAllClient,
+  sendToWebSocketClient,
+} from '../utils/sendToWebSocketClient';
 
-const updateRooms = (ws: WebSocket) => {
+const updateRooms = () => {
   const rooms = gameOperations.getRooms();
-  const stringifyRooms = JSON.stringify(rooms);
+  if (rooms.length > 0) {
+    const stringifyRooms = JSON.stringify(rooms);
 
-  sendToWebSocketClient(ws, GameCommands.UPDATE_ROOM, stringifyRooms);
+    sendToWebSocketAllClient(GameCommands.UPDATE_ROOM, stringifyRooms);
+  }
 };
 
 export const login = (ws: WebSocket, data: unknown) => {
@@ -29,19 +34,18 @@ export const login = (ws: WebSocket, data: unknown) => {
 
   sendToWebSocketClient(ws, GameCommands.REG, stringifyNewPlayer);
 
-  updateRooms(ws);
+  updateRooms();
 };
 
 export const createRoom = (ws: WebSocket) => {
-  gameOperations.createRoom();
+  const indexUser = getUserIndex(ws);
+  gameOperations.createRoom(indexUser);
 
-  updateRooms(ws);
+  updateRooms();
 };
 
 export const getUserIndex = (ws: WebSocket) => {
-  const index = Array.from(wsServer.clients).findIndex(
-    (client) => client === ws,
-  );
+  const index = wsOperations.getUserIndex(ws);
   return index;
 };
 
@@ -50,7 +54,17 @@ export const addUserToRoom = (ws: WebSocket, data: unknown) => {
 
   const indexUser = getUserIndex(ws);
 
-  gameOperations.addUserToRoom(indexRoom, indexUser);
+  const roomUsers = gameOperations.addUserToRoom(indexRoom, indexUser);
+  if (roomUsers?.length === 2) {
+    const game = gameOperations.createGame(indexUser);
+    createGame(game);
+  }
 
-  updateRooms(ws);
+  updateRooms();
+};
+
+const createGame = (game: Game) => {
+  const stringifyNewGame = JSON.stringify(game);
+
+  sendToWebSocketAllClient(GameCommands.CREATE_GAME, stringifyNewGame);
 };
