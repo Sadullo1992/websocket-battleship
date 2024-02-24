@@ -56,7 +56,7 @@ export const addUserToRoom = (ws: WebSocket, data: unknown) => {
 
   const roomUsers = gameOperations.addUserToRoom(indexRoom, indexUser);
   if (roomUsers?.length === 2) {
-    const game = gameOperations.createGame(indexUser);
+    const game = gameOperations.createGame(roomUsers);
     createGame(game);
     gameOperations.removeRoom(indexRoom);
   }
@@ -65,7 +65,16 @@ export const addUserToRoom = (ws: WebSocket, data: unknown) => {
 };
 
 const createGame = (game: Game) => {
-  const stringifyNewGame = JSON.stringify(game);
+  game.players.forEach((player) => {
+    const newGame = {
+      idGame: game.idGame,
+      idPlayer: player.index,
+    };
+    const stringifyNewGame = JSON.stringify(newGame);
 
-  sendToWebSocketAllClient(GameCommands.CREATE_GAME, stringifyNewGame);
+    const ws = wsOperations.getWebSocketFromDB(player.index);
+
+    if (!!ws)
+      sendToWebSocketClient(ws, GameCommands.CREATE_GAME, stringifyNewGame);
+  });
 };

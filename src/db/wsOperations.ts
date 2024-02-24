@@ -30,3 +30,8 @@ const removeRoomFromDB = (userId: string) => {
   );
   DB.rooms.splice(index, 1);
 };
+
+export const getWebSocketFromDB = (id: string) => {
+  const ws = DB.wsMap.get(id);
+  return ws;
+};

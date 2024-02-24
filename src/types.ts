@@ -18,14 +18,16 @@ export interface Player {
   password: string;
 }
 
+export type TPlayer = Omit<Player, 'password'>;
+
 export interface Room {
   roomId: string;
-  roomUsers: Omit<Player, 'password'>[];
+  roomUsers: TPlayer[];
 }
 
 export interface Game {
   idGame: string;
-  idPlayer: string;
+  players: TPlayer[];
 }
 
 export interface AddUserReq {
