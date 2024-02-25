@@ -9,6 +9,7 @@ export enum GameCommands {
   ATTACK = 'attack',
   RANDOM_ATTACK = 'randomAttack',
   TURN = 'turn',
+  FINISH = 'finish',
 }
 
 export interface GameCommand<T> {

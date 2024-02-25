@@ -125,7 +125,8 @@ const startGame = (game: Game) => {
 export const attack = (ws: WebSocket, data: unknown) => {
   const attackReq = data as Attack;
 
-  const { turnData, attackResults } = activeGameOperations.attack(attackReq);
+  const { attackResults, turnData, isFinish } =
+    activeGameOperations.attack(attackReq);
 
   attackResults.forEach((result) => {
     const stringifyAttackResult = JSON.stringify(result);
@@ -133,6 +134,8 @@ export const attack = (ws: WebSocket, data: unknown) => {
   });
 
   turn(turnData);
+
+  !!isFinish && finish(turnData);
 };
 
 // turn
@@ -158,4 +161,16 @@ export const randomAttack = (ws: WebSocket, data: unknown) => {
   };
 
   attack(ws, attackData);
+};
+
+const finish = ({ playerIds, currentPlayer }: TurnData) => {
+  const stringifyFinishData = JSON.stringify({
+    winPlayer: currentPlayer,
+  });
+
+  playerIds.forEach((indexPlayer) => {
+    const ws = wsOperations.getWebSocketFromDB(indexPlayer);
+    if (!!ws)
+      sendToWebSocketClient(ws, GameCommands.FINISH, stringifyFinishData);
+  });
 };

@@ -57,6 +57,8 @@ export const attack = (attack: Attack) => {
   const indexCell = destroyedEnemyShip.cells.findIndex(isCellExist);
   destroyedEnemyShip.cells.splice(indexCell, 1);
 
+  const isFinish = enemyPlayer?.ships.every((ship) => ship.cells.length === 0);
+
   if (destroyedEnemyShip.cells.length > 0)
     return {
       turnData,
@@ -82,6 +84,7 @@ export const attack = (attack: Attack) => {
     }));
 
     return {
+      isFinish,
       turnData,
       attackResults: [...aroundCellRes, ...ownCellRes],
     };
