@@ -13,7 +13,7 @@ export const removeWebSocketFromDB = (id: string) => {
 
 export const getUserIndex = (ws: WebSocket) => {
   const map = DB.wsMap;
-  for (let [key, value] of map.entries()) {
+  for (const [key, value] of map.entries()) {
     if (value === ws) return key;
   }
   return '';

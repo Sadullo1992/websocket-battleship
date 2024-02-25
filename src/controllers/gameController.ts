@@ -1,7 +1,15 @@
 import WebSocket from 'ws';
 import * as gameOperations from '../db/gameOperations';
 import * as wsOperations from '../db/wsOperations';
-import { AddUserReq, Game, GameCommands, Player } from '../types';
+import * as activeGameOperations from '../db/activeGameOperations';
+import {
+  AddShipsReq,
+  AddUserReq,
+  Attack,
+  Game,
+  GameCommands,
+  Player,
+} from '../types';
 import {
   sendToWebSocketAllClient,
   sendToWebSocketClient,
@@ -67,14 +75,50 @@ export const addUserToRoom = (ws: WebSocket, data: unknown) => {
 const createGame = (game: Game) => {
   game.players.forEach((player) => {
     const newGame = {
-      idGame: game.idGame,
-      idPlayer: player.index,
+      idGame: game.gameId,
+      idPlayer: player.indexPlayer,
     };
     const stringifyNewGame = JSON.stringify(newGame);
 
-    const ws = wsOperations.getWebSocketFromDB(player.index);
+    const ws = wsOperations.getWebSocketFromDB(player.indexPlayer);
 
     if (!!ws)
       sendToWebSocketClient(ws, GameCommands.CREATE_GAME, stringifyNewGame);
+  });
+};
+
+// Game Session
+export const addShips = (data: unknown) => {
+  const shipsData = data as AddShipsReq;
+  const game = activeGameOperations.addShips(shipsData);
+
+  const isStartGame = game?.players.every((player) => player.ships.length > 0);
+
+  if (!!game && isStartGame) startGame(game);
+};
+
+const startGame = (game: Game) => {
+  game.players.forEach((player) => {
+    const gameData = {
+      currentPlayerIndex: player.indexPlayer,
+      ships: player.ships,
+    };
+    const stringifyGameData = JSON.stringify(gameData);
+
+    const ws = wsOperations.getWebSocketFromDB(player.indexPlayer);
+
+    if (!!ws)
+      sendToWebSocketClient(ws, GameCommands.START_GAME, stringifyGameData);
+  });
+};
+
+export const attack = (ws: WebSocket, data: unknown) => {
+  const attackReq = data as Attack;
+
+  const attackResults = activeGameOperations.attack(attackReq);
+
+  attackResults.forEach((result) => {
+    const stringifyAttackResult = JSON.stringify(result);
+    sendToWebSocketClient(ws, GameCommands.ATTACK, stringifyAttackResult);
   });
 };

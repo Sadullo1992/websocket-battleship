@@ -50,9 +50,13 @@ export const addUserToRoom = (indexRoom: string, indexUser: string) => {
 };
 
 export const createGame = (players: TPlayer[]) => {
+  const gamePlayers = players.map((item) => ({
+    indexPlayer: item.index,
+    ships: [],
+  }));
   const newGame = {
-    idGame: uuidGenerator(),
-    players,
+    gameId: uuidGenerator(),
+    players: gamePlayers,
   };
 
   DB.games.push(newGame);

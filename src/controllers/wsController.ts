@@ -16,6 +16,12 @@ const wsController = (ws: WebSocket, rawData: WebSocket.RawData) => {
     case GameCommands.ADD_USER_TO_ROOM:
       gameController.addUserToRoom(ws, data);
       break;
+    case GameCommands.ADD_SHIPS:
+      gameController.addShips(data);
+      break;
+    case GameCommands.ATTACK:
+      gameController.attack(ws, data);
+      break;
   }
 };
 
