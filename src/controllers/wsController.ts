@@ -22,6 +22,9 @@ const wsController = (ws: WebSocket, rawData: WebSocket.RawData) => {
     case GameCommands.ATTACK:
       gameController.attack(ws, data);
       break;
+    case GameCommands.RANDOM_ATTACK:
+      gameController.randomAttack(ws, data);
+      break;
   }
 };
 

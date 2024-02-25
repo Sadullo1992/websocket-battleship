@@ -9,11 +9,14 @@ import {
   Game,
   GameCommands,
   Player,
+  RandomAttack,
+  TurnData,
 } from '../types';
 import {
   sendToWebSocketAllClient,
   sendToWebSocketClient,
 } from '../utils/sendToWebSocketClient';
+import { generateRandomPosition } from '../utils/generateRandomPosition';
 
 const updateRooms = () => {
   const rooms = gameOperations.getRooms();
@@ -98,27 +101,61 @@ export const addShips = (data: unknown) => {
 };
 
 const startGame = (game: Game) => {
-  game.players.forEach((player) => {
+  game.players.forEach((player, _, players) => {
     const gameData = {
       currentPlayerIndex: player.indexPlayer,
       ships: player.ships,
     };
     const stringifyGameData = JSON.stringify(gameData);
 
+    const stringifyTurnData = JSON.stringify({
+      currentPlayer: players[1].indexPlayer,
+    });
+
     const ws = wsOperations.getWebSocketFromDB(player.indexPlayer);
 
-    if (!!ws)
+    if (!!ws) {
       sendToWebSocketClient(ws, GameCommands.START_GAME, stringifyGameData);
+
+      sendToWebSocketClient(ws, GameCommands.TURN, stringifyTurnData);
+    }
   });
 };
 
 export const attack = (ws: WebSocket, data: unknown) => {
   const attackReq = data as Attack;
 
-  const attackResults = activeGameOperations.attack(attackReq);
+  const { turnData, attackResults } = activeGameOperations.attack(attackReq);
 
   attackResults.forEach((result) => {
     const stringifyAttackResult = JSON.stringify(result);
     sendToWebSocketClient(ws, GameCommands.ATTACK, stringifyAttackResult);
   });
+
+  turn(turnData);
+};
+
+// turn
+const turn = ({ playerIds, currentPlayer }: TurnData) => {
+  const stringifyTurnData = JSON.stringify({
+    currentPlayer,
+  });
+
+  playerIds.forEach((indexPlayer) => {
+    const ws = wsOperations.getWebSocketFromDB(indexPlayer);
+    if (!!ws) sendToWebSocketClient(ws, GameCommands.TURN, stringifyTurnData);
+  });
+};
+
+//random attack
+export const randomAttack = (ws: WebSocket, data: unknown) => {
+  const randomAttackReq = data as RandomAttack;
+  const position = generateRandomPosition();
+
+  const attackData = {
+    ...randomAttackReq,
+    ...position,
+  };
+
+  attack(ws, attackData);
 };

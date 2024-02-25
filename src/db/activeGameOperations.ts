@@ -40,20 +40,33 @@ export const attack = (attack: Attack) => {
     status: 'miss',
   };
 
-  if (!destroyedEnemyShip) return [attackRes];
-  console.log(destroyedEnemyShip.cells);
+  const turnData = {
+    playerIds: [indexPlayer, enemyPlayer?.indexPlayer || ''],
+    currentPlayer: indexPlayer,
+  };
+
+  if (!destroyedEnemyShip)
+    return {
+      turnData: {
+        ...turnData,
+        currentPlayer: enemyPlayer?.indexPlayer || '',
+      },
+      attackResults: [attackRes],
+    };
 
   const indexCell = destroyedEnemyShip.cells.findIndex(isCellExist);
   destroyedEnemyShip.cells.splice(indexCell, 1);
-  console.log(destroyedEnemyShip.cells);
 
   if (destroyedEnemyShip.cells.length > 0)
-    return [
-      {
-        ...attackRes,
-        status: 'shot',
-      },
-    ];
+    return {
+      turnData,
+      attackResults: [
+        {
+          ...attackRes,
+          status: 'shot',
+        },
+      ],
+    };
   else {
     const ownCells = getShipCells(destroyedEnemyShip);
     const aroundCells = getShipAroundCells(destroyedEnemyShip);
@@ -68,6 +81,9 @@ export const attack = (attack: Attack) => {
       position: { x: item.x, y: item.y },
     }));
 
-    return [...aroundCellRes, ...ownCellRes];
+    return {
+      turnData,
+      attackResults: [...aroundCellRes, ...ownCellRes],
+    };
   }
 };

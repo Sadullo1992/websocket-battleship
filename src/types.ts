@@ -7,6 +7,8 @@ export enum GameCommands {
   ADD_SHIPS = 'add_ships',
   START_GAME = 'start_game',
   ATTACK = 'attack',
+  RANDOM_ATTACK = 'randomAttack',
+  TURN = 'turn',
 }
 
 export interface GameCommand<T> {
@@ -67,6 +69,8 @@ export interface Attack {
   indexPlayer: string;
 }
 
+export type RandomAttack = Exclude<Attack, 'x' | 'y'>;
+
 export interface AttackFeedback {
   position: {
     x: number;
@@ -74,4 +78,9 @@ export interface AttackFeedback {
   };
   currentPlayer: string;
   status: 'miss' | 'killed' | 'shot';
+}
+
+export interface TurnData {
+  playerIds: string[];
+  currentPlayer: string;
 }
