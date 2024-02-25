@@ -20,11 +20,9 @@ import { generateRandomPosition } from '../utils/generateRandomPosition';
 
 const updateRooms = () => {
   const rooms = gameOperations.getRooms();
-  if (rooms.length > 0) {
-    const stringifyRooms = JSON.stringify(rooms);
+  const stringifyRooms = JSON.stringify(rooms);
 
-    sendToWebSocketAllClient(GameCommands.UPDATE_ROOM, stringifyRooms);
-  }
+  sendToWebSocketAllClient(GameCommands.UPDATE_ROOM, stringifyRooms);
 };
 
 export const login = (ws: WebSocket, data: unknown) => {
@@ -173,4 +171,15 @@ const finish = ({ playerIds, currentPlayer }: TurnData) => {
     if (!!ws)
       sendToWebSocketClient(ws, GameCommands.FINISH, stringifyFinishData);
   });
+
+  updateWinners(currentPlayer);
+};
+
+const updateWinners = (indexPlayer: string) => {
+  const winners = gameOperations.updateWinners(indexPlayer);
+  const winnersRes = winners.map(({ name, wins }) => ({ name, wins }));
+
+  const stringifyWinnersData = JSON.stringify(winnersRes);
+
+  sendToWebSocketAllClient(GameCommands.UPDATE_WINNERS, stringifyWinnersData);
 };

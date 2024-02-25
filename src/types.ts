@@ -10,6 +10,7 @@ export enum GameCommands {
   RANDOM_ATTACK = 'randomAttack',
   TURN = 'turn',
   FINISH = 'finish',
+  UPDATE_WINNERS = 'update_winners',
 }
 
 export interface GameCommand<T> {
@@ -84,4 +85,8 @@ export interface AttackFeedback {
 export interface TurnData {
   playerIds: string[];
   currentPlayer: string;
+}
+
+export interface Winner extends TPlayer {
+  wins: number;
 }

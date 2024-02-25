@@ -68,3 +68,14 @@ export const removeRoom = (indexRoom: string) => {
   const index = DB.rooms.findIndex((item) => item.roomId === indexRoom);
   DB.rooms.splice(index, 1);
 };
+
+export const updateWinners = (indexPlayer: string) => {
+  const index = DB.winners.findIndex((item) => item.index === indexPlayer);
+
+  if (index === -1) {
+    const user = getCurrentUser(indexPlayer);
+    !!user && DB.winners.push({ ...user, wins: 1 });
+  } else DB.winners[index].wins++;
+
+  return DB.winners;
+};
