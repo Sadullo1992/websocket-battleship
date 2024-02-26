@@ -32,14 +32,9 @@ export const login = (ws: WebSocket, data: unknown) => {
     index,
     ...(data as Omit<Player, 'index'>),
   };
-  const { name } = gameOperations.createPlayer(newPlayer);
+  const playerRes = gameOperations.createPlayer(newPlayer);
 
-  const stringifyNewPlayer = JSON.stringify({
-    name,
-    index,
-    error: false,
-    errorText: 'No error',
-  });
+  const stringifyNewPlayer = JSON.stringify(playerRes);
 
   sendToWebSocketClient(ws, GameCommands.REG, stringifyNewPlayer);
 

@@ -3,14 +3,20 @@ import { uuidGenerator } from '../utils/uuidGenerator';
 import * as DB from './db';
 
 export const createPlayer = (player: Player) => {
-  const newPlayer = {
+  const isUsernameExist = DB.players.some((item) => item.name === player.name);
+
+  !isUsernameExist && DB.players.push(player);
+
+  const ERROR_MSG = 'This username is already exist. Please, try another one.';
+
+  const playerRes = {
     index: player.index,
     name: player.name,
+    error: isUsernameExist,
+    errorText: isUsernameExist ? ERROR_MSG : '',
   };
 
-  DB.players.push(newPlayer);
-
-  return newPlayer;
+  return playerRes;
 };
 
 export const createRoom = (userIndex: string) => {
@@ -28,9 +34,13 @@ export const createRoom = (userIndex: string) => {
 
 export const getRooms = () => DB.rooms;
 
-const getCurrentUser = (index: string) => {
-  const user = DB.players.find((player) => player.index === index);
-  return user;
+const getCurrentUser = (userIndex: string) => {
+  const user = DB.players.find((player) => player.index === userIndex);
+
+  if (!user) return;
+
+  const { name, index } = user;
+  return { name, index };
 };
 
 export const addUserToRoom = (indexRoom: string, indexUser: string) => {

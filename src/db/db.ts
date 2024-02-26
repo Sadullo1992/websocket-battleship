@@ -1,9 +1,9 @@
 import WebSocket from 'ws';
-import { Game, Room, TPlayer, Winner } from '../types';
+import { Game, Room, Player, Winner } from '../types';
 
 export const wsMap = new Map<string, WebSocket>();
 
-export const players: TPlayer[] = [];
+export const players: Player[] = [];
 
 export const rooms: Room[] = [];
 
