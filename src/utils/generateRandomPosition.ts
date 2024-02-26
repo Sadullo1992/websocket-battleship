@@ -9,6 +9,7 @@ export const generateRandomPosition = (function () {
     }
   }
   return function () {
+    if (n > 98) n = -1;
     n++;
     return arr[n];
   };
