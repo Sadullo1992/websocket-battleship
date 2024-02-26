@@ -11,6 +11,8 @@ export enum GameCommands {
   TURN = 'turn',
   FINISH = 'finish',
   UPDATE_WINNERS = 'update_winners',
+  SINGLE_PLAY = 'single_play',
+  START_BOT = 'start_bot',
 }
 
 export interface GameCommand<T> {
@@ -62,6 +64,11 @@ export interface AddShipsReq {
   gameId: string;
   indexPlayer: string;
   ships: Omit<Ship, 'cells'>[];
+}
+
+export interface AddShipsRes {
+  idGame: string;
+  idPlayer: string;
 }
 
 export interface Attack {

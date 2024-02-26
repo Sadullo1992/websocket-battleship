@@ -10,6 +10,7 @@ import {
   GameCommands,
   Player,
   RandomAttack,
+  TPlayer,
   TurnData,
 } from '../types';
 import {
@@ -17,6 +18,7 @@ import {
   sendToWebSocketClient,
 } from '../utils/sendToWebSocketClient';
 import { generateRandomPosition } from '../utils/generateRandomPosition';
+import { createWebSocketClient } from '../bot/createWebSocketClient';
 
 const updateRooms = () => {
   const rooms = gameOperations.getRooms();
@@ -121,9 +123,13 @@ export const attack = (ws: WebSocket, data: unknown) => {
   const { attackResults, turnData, isFinish } =
     activeGameOperations.attack(attackReq);
 
-  attackResults.forEach((result) => {
-    const stringifyAttackResult = JSON.stringify(result);
-    sendToWebSocketClient(ws, GameCommands.ATTACK, stringifyAttackResult);
+  turnData.playerIds.forEach((indexPlayer) => {
+    const ws = wsOperations.getWebSocketFromDB(indexPlayer);
+    attackResults.forEach((result) => {
+      const stringifyAttackResult = JSON.stringify(result);
+      if (!!ws)
+        sendToWebSocketClient(ws, GameCommands.ATTACK, stringifyAttackResult);
+    });
   });
 
   turn(turnData);
@@ -177,4 +183,21 @@ const updateWinners = (indexPlayer: string) => {
   const stringifyWinnersData = JSON.stringify(winnersRes);
 
   sendToWebSocketAllClient(GameCommands.UPDATE_WINNERS, stringifyWinnersData);
+};
+
+export const singlePlay = (ws: WebSocket) => {
+  const userIndex = getUserIndex(ws);
+  const user = gameOperations.getCurrentUser(userIndex);
+
+  if (!!user) createWebSocketClient(user);
+};
+
+export const startBot = (ws: WebSocket, data: unknown) => {
+  const player = data as TPlayer;
+
+  const botId = getUserIndex(ws);
+  const bot = gameOperations.createBot(botId);
+
+  const game = gameOperations.createGame([bot, player]);
+  createGame(game);
 };

@@ -34,7 +34,7 @@ export const createRoom = (userIndex: string) => {
 
 export const getRooms = () => DB.rooms;
 
-const getCurrentUser = (userIndex: string) => {
+export const getCurrentUser = (userIndex: string) => {
   const user = DB.players.find((player) => player.index === userIndex);
 
   if (!user) return;
@@ -88,4 +88,19 @@ export const updateWinners = (indexPlayer: string) => {
   } else DB.winners[index].wins++;
 
   return DB.winners;
+};
+
+export const createBot = (indexBot: string) => {
+  const bot = {
+    index: indexBot,
+    name: 'Bot',
+    password: indexBot,
+  };
+
+  DB.players.push(bot);
+
+  return {
+    index: bot.index,
+    name: bot.name,
+  };
 };

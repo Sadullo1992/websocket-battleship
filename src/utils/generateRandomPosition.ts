@@ -10,7 +10,6 @@ export const generateRandomPosition = (function () {
   }
   return function () {
     n++;
-
     return arr[n];
   };
 })();
