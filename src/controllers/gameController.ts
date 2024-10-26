@@ -117,11 +117,17 @@ const startGame = (game: Game) => {
   });
 };
 
+let currentPlayerId: string;
+
 export const attack = (ws: WebSocket, data: unknown) => {
   const attackReq = data as Attack;
 
+  if (currentPlayerId && currentPlayerId !== attackReq.indexPlayer) return;
+
   const { attackResults, turnData, isFinish } =
     activeGameOperations.attack(attackReq);
+
+  currentPlayerId = turnData.currentPlayer;
 
   turnData.playerIds.forEach((indexPlayer) => {
     const ws = wsOperations.getWebSocketFromDB(indexPlayer);
