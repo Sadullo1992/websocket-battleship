@@ -104,3 +104,18 @@ export const createBot = (indexBot: string) => {
     name: bot.name,
   };
 };
+
+export const setCurrentPlayerState = (
+  gameId: string,
+  currentPlayerIndex: string,
+) => {
+  DB.currentPlayerMap.set(gameId, currentPlayerIndex);
+};
+
+export const getCurrentPlayerState = (gameId: string) => {
+  return DB.currentPlayerMap.get(gameId);
+};
+
+export const removeCurrentPlayerState = (gameId: string) => {
+  return DB.currentPlayerMap.delete(gameId);
+};

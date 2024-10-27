@@ -107,6 +107,9 @@ const startGame = (game: Game) => {
       currentPlayer: players[1].indexPlayer,
     });
 
+    // Set game player state
+    gameOperations.setCurrentPlayerState(game.gameId, players[1].indexPlayer);
+
     const ws = wsOperations.getWebSocketFromDB(player.indexPlayer);
 
     if (!!ws) {
@@ -117,17 +120,23 @@ const startGame = (game: Game) => {
   });
 };
 
-let currentPlayerId: string;
-
 export const attack = (ws: WebSocket, data: unknown) => {
   const attackReq = data as Attack;
 
-  if (currentPlayerId && currentPlayerId !== attackReq.indexPlayer) return;
+  const currentPlayerId = gameOperations.getCurrentPlayerState(
+    attackReq.gameId,
+  );
+
+  if (currentPlayerId !== attackReq.indexPlayer) return;
 
   const { attackResults, turnData, isFinish } =
     activeGameOperations.attack(attackReq);
 
-  currentPlayerId = turnData.currentPlayer;
+  // Update game player state
+  gameOperations.setCurrentPlayerState(
+    attackReq.gameId,
+    turnData.currentPlayer,
+  );
 
   turnData.playerIds.forEach((indexPlayer) => {
     const ws = wsOperations.getWebSocketFromDB(indexPlayer);
@@ -140,7 +149,11 @@ export const attack = (ws: WebSocket, data: unknown) => {
 
   turn(turnData);
 
-  !!isFinish && finish(turnData);
+  if (!!isFinish) {
+    finish(turnData);
+    // remove game state
+    gameOperations.removeCurrentPlayerState(attackReq.gameId);
+  }
 };
 
 // turn

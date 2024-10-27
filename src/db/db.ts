@@ -10,3 +10,5 @@ export const rooms: Room[] = [];
 export const games: Game[] = [];
 
 export const winners: Winner[] = [];
+
+export const currentPlayerMap = new Map<string, string>();
