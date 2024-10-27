@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "CommonJS",
+    "target": "es2022",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "allowJs": true,
+    "importHelpers": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["./node_modules", "./dist", "./front"]
+}
